@@ -1,6 +1,8 @@
 import styles from "./styles.module.scss";
 import { getPrismicClient } from "../../services/prismic";
 import { RichText } from "prismic-dom";
+import { Session } from "next-auth";
+import { useSession } from "next-auth/client";
 import Prismic from "@prismicio/client";
 import Head from "next/head";
 import { GetStaticProps } from "next";
@@ -16,8 +18,15 @@ type Post = {
 interface PostsProps {
   posts: Post[];
 }
+interface UserSubscriptionSession extends Session {
+  activeSubscription?: any;
+}
+
+type SessionProps = [UserSubscriptionSession, boolean];
 
 export default function Posts({ posts }: PostsProps) {
+  const [session]: SessionProps = useSession();
+
   return (
     <>
       <Head>
@@ -26,16 +35,33 @@ export default function Posts({ posts }: PostsProps) {
 
       <main className={styles.container}>
         <div className={styles.posts}>
-          {posts.map(post => (
-            <Link href={`/posts/${post.slug}`}>
-              <a key={post.slug} href="https://howow.linebr.com/minhaconta.php">
-                <time>{post.updatedAt}</time>
+          {posts.map(post =>
+            session?.activeSubscription ? (
+              <Link href={`/posts/${post.slug}`}>
+                <a
+                  key={post.slug}
+                  href="https://howow.linebr.com/minhaconta.php"
+                >
+                  <time>{post.updatedAt}</time>
 
-                <strong>{post.title}</strong>
-                <p>{post.excerpt}</p>
-              </a>
-            </Link>
-          ))}
+                  <strong>{post.title}</strong>
+                  <p>{post.excerpt}</p>
+                </a>
+              </Link>
+            ) : (
+              <Link href={`/posts/preview/${post.slug}`}>
+                <a
+                  key={post.slug}
+                  href="https://howow.linebr.com/minhaconta.php"
+                >
+                  <time>{post.updatedAt}</time>
+
+                  <strong>{post.title}</strong>
+                  <p>{post.excerpt}</p>
+                </a>
+              </Link>
+            )
+          )}
         </div>
       </main>
     </>

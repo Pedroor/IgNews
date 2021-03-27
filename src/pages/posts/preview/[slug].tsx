@@ -1,6 +1,8 @@
-import { GetStaticProps } from "next";
+import { GetStaticPaths, GetStaticProps } from "next";
 import { Session } from "next-auth";
-import { useSession } from "next-auth/client";
+import { api } from "../../../services/api";
+import { getStripeJs } from "../../../services/stripe-js";
+import { useSession, signIn } from "next-auth/client";
 import { useRouter } from "next/dist/client/router";
 import { Head } from "next/document";
 import Link from "next/link";
@@ -34,6 +36,29 @@ export default function PostPreview({ post }: PostPreviewProps) {
     }
   }, [session]);
 
+  async function handleSubscribe() {
+    if (!session) {
+      signIn("github");
+      return;
+    }
+
+    if (session.activeSubscription) {
+      router.push("/posts");
+      return;
+    }
+
+    try {
+      const response = await api.post("/subscribe");
+
+      const { sessionId } = response.data;
+      const stripe = await getStripeJs();
+
+      await stripe.redirectToCheckout({ sessionId });
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
   return (
     <>
       {/* <Head>
@@ -51,9 +76,9 @@ export default function PostPreview({ post }: PostPreviewProps) {
 
           <div className={styles.continueReading}>
             Wanna continue reading?
-            <Link href="/">
-              <a>Subscribe now 😆</a>
-            </Link>
+            <button type={"button"} onClick={handleSubscribe}>
+              <strong>Subscribe now 😆</strong>
+            </button>
           </div>
         </article>
       </main>
@@ -61,9 +86,15 @@ export default function PostPreview({ post }: PostPreviewProps) {
   );
 }
 
-export const getStaticPaths = () => {
+export const getStaticPaths: GetStaticPaths = async () => {
   return {
-    paths: [],
+    paths: [
+      // {
+      //   params: {
+      //     slug: "next.js---novidades-na-versao-10-e-atualizacao-do-blog",
+      //   },
+      // },
+    ],
     fallback: "blocking",
   };
 };

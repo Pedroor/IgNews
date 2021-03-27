@@ -56,6 +56,18 @@
   font-weight: bold;
   margin: 4rem 0 2rem;
 
+  button {
+    border: 0;
+    background: var(--gray-850);
+
+    strong {
+      font-size: 1.25rem;
+      font-weight: bold;
+      padding: 0.5rem;
+      color: var(--yellow-500);
+    }
+  }
+
   a {
     color: var(--yellow-500);
     margin-left: 0.5rem;
