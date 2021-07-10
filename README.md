@@ -1,7 +1,7 @@
-# Ignews
+# Tech News
 
 <h1 align="center">
-  <img alt="ig.news" title="ig.news" width="200px"  src=".github/logo.svg" />
+  <img alt="tech.news" title="Tech.news" width="200px"  src=".github/logo.svg" />
 </h1>
 
 <h3 align="center">
