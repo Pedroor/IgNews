@@ -1,12 +1,13 @@
-import styles from "./styles.module.scss";
-import { getPrismicClient } from "../../services/prismic";
-import { RichText } from "prismic-dom";
-import { Session } from "next-auth";
-import { useSession } from "next-auth/client";
-import Prismic from "@prismicio/client";
-import Head from "next/head";
 import { GetStaticProps } from "next";
 import Link from "next/link";
+import Head from "next/head";
+import Prismic from "@prismicio/client";
+import { RichText } from "prismic-dom";
+
+import { getPrismicClient } from "../../services/prismic";
+
+import styles from "./styles.module.scss";
+import { useSession } from "next-auth/client";
 
 type Post = {
   slug: string;
@@ -18,50 +19,37 @@ type Post = {
 interface PostsProps {
   posts: Post[];
 }
-interface UserSubscriptionSession extends Session {
-  activeSubscription?: any;
-}
-
-type SessionProps = [UserSubscriptionSession, boolean];
 
 export default function Posts({ posts }: PostsProps) {
-  const [session]: SessionProps = useSession();
+  const [session] = useSession();
+
+  let userPay = session?.activeSubscription;
+  let userLogged = Boolean(session);
 
   return (
     <>
       <Head>
-        <title>Posts | TechNews</title>
+        <title>Posts | Ignews</title>
       </Head>
 
       <main className={styles.container}>
         <div className={styles.posts}>
-          {posts.map(post =>
-            session?.activeSubscription ? (
-              <Link href={`/posts/${post.slug}`}>
-                <a
-                  key={post.slug}
-                  href="https://howow.linebr.com/minhaconta.php"
-                >
-                  <time>{post.updatedAt}</time>
-
-                  <strong>{post.title}</strong>
-                  <p>{post.excerpt}</p>
-                </a>
-              </Link>
-            ) : (
-              <Link href={`/posts/preview/${post.slug}`}>
-                <a
-                  key={post.slug}
-                  href="https://howow.linebr.com/minhaconta.php"
-                >
-                  <time>{post.updatedAt}</time>
-
-                  <strong>{post.title}</strong>
-                  <p>{post.excerpt}</p>
-                </a>
-              </Link>
-            )
-          )}
+          {posts.map((post) => (
+            <Link
+              key={post.slug}
+              href={
+                userLogged && userPay
+                  ? `/posts/${post.slug}`
+                  : `/posts/preview/${post.slug}`
+              }
+            >
+              <a>
+                <time>{post.updatedAt}</time>
+                <strong>{post.title}</strong>
+                <p>{post.excerpt}</p>
+              </a>
+            </Link>
+          ))}
         </div>
       </main>
     </>
@@ -72,20 +60,20 @@ export const getStaticProps: GetStaticProps = async () => {
   const prismic = getPrismicClient();
 
   const response = await prismic.query(
-    [Prismic.predicates.at("document.type", "post")],
+    [Prismic.Predicates.at("document.type", "post")],
     {
-      fetch: ["publication.title", "publication.content"],
+      fetch: ["post.title", "post.content"],
       pageSize: 100,
     }
   );
 
-  const posts = response.results.map(post => {
+  const posts = response.results.map((post) => {
     return {
       slug: post.uid,
       title: RichText.asText(post.data.title),
       excerpt:
-        post.data.content.find(content => content.type === "paragraph")?.text ?? // se não existir isso retorna isso
-        "",
+        post.data.content.find((content) => content.type === "paragraph")
+          ?.text ?? "",
       updatedAt: new Date(post.last_publication_date).toLocaleDateString(
         "pt-BR",
         {
@@ -101,5 +89,6 @@ export const getStaticProps: GetStaticProps = async () => {
     props: {
       posts,
     },
+    revalidate: 60 * 30, // 30 minutes
   };
 };

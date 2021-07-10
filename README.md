@@ -21,7 +21,7 @@
 
 ## 👩‍💻 Sobre o Projeto
 
-[Technews] é um projeto criado na [Rocketseat](https://rocketseat.com.br/) no treinamento Ignite ReactJS.
+[Ignews](https://ignews.vercel.app/) é um projeto criado na [Rocketseat](https://rocketseat.com.br/) no treinamento Ignite ReactJS.
 
 Neste projeto você pode se inscrever para ler posts sobre o mundo ReactJS.
 
@@ -45,7 +45,7 @@ Neste projeto você pode se inscrever para ler posts sobre o mundo ReactJS.
 **Clone o projeto e acesse a pasta**
 
 ```bash
-$ git clone https://github.com/Pedroor/TechNews.git && cd TechNews
+$ git clone https://github.com/Daniel-Vinicius/Ignite.git && cd Ignite && cd 03-ignews
 ```
 
 **Siga os passos abaixo**
@@ -69,5 +69,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 <p align="center">
-Feito com 💜&nbsp;por <a href="https://github.com/Daniel-Vinicius">Pedro Arthur</a>
+Feito com 💜&nbsp;por <a href="https://github.com/Pedroor">Pedro Arthur</a>
 </p>
+
+### Acessar
+
+- https://nextjs.org/docs/authentication
+
+Para autenticar com Google
+
+- https://next-auth.js.org/providers/google
+- https://developers.google.com/identity/protocols/oauth2
+- https://console.cloud.google.com/projectselector2/apis/credentials

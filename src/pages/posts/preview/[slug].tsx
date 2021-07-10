@@ -1,15 +1,14 @@
 import { GetStaticPaths, GetStaticProps } from "next";
-import { Session } from "next-auth";
-import { api } from "../../../services/api";
-import { getStripeJs } from "../../../services/stripe-js";
-import { useSession, signIn } from "next-auth/client";
-import { useRouter } from "next/dist/client/router";
-import { Head } from "next/document";
 import Link from "next/link";
+import Head from "next/head";
 import { RichText } from "prismic-dom";
-import { useEffect } from "react";
+
 import { getPrismicClient } from "../../../services/prismic";
+
 import styles from "../post.module.scss";
+import { useSession } from "next-auth/client";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 interface PostPreviewProps {
   post: {
@@ -20,14 +19,8 @@ interface PostPreviewProps {
   };
 }
 
-interface UserSubscriptionSession extends Session {
-  activeSubscription?: any;
-}
-
-type SessionProps = [UserSubscriptionSession, boolean];
-
 export default function PostPreview({ post }: PostPreviewProps) {
-  const [session]: SessionProps = useSession();
+  const [session] = useSession();
   const router = useRouter();
 
   useEffect(() => {
@@ -36,49 +29,26 @@ export default function PostPreview({ post }: PostPreviewProps) {
     }
   }, [session]);
 
-  async function handleSubscribe() {
-    if (!session) {
-      signIn("github");
-      return;
-    }
-
-    if (session.activeSubscription) {
-      router.push("/posts");
-      return;
-    }
-
-    try {
-      const response = await api.post("/subscribe");
-
-      const { sessionId } = response.data;
-      const stripe = await getStripeJs();
-
-      await stripe.redirectToCheckout({ sessionId });
-    } catch (err) {
-      alert(err.message);
-    }
-  }
-
   return (
     <>
-      {/* <Head>
+      <Head>
         <title>{post.title} | Ignews</title>
-      </Head> */}
+      </Head>
 
       <main className={styles.container}>
         <article className={styles.post}>
           <h1>{post.title}</h1>
           <time>{post.updatedAt}</time>
+
           <div
             className={`${styles.postContent} ${styles.previewContent}`}
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
-
           <div className={styles.continueReading}>
-            Wanna continue reading?
-            <button type={"button"} onClick={handleSubscribe}>
-              <strong>Subscribe now 😆</strong>
-            </button>
+            Wanna continue reading?{" "}
+            <Link href="/">
+              <a>Subscribe Now 🤗</a>
+            </Link>
           </div>
         </article>
       </main>
@@ -89,11 +59,9 @@ export default function PostPreview({ post }: PostPreviewProps) {
 export const getStaticPaths: GetStaticPaths = async () => {
   return {
     paths: [
-      // {
-      //   params: {
-      //     slug: "next.js---novidades-na-versao-10-e-atualizacao-do-blog",
-      //   },
-      // },
+      {
+        params: { slug: "serverless-quando-utilizar-e-aplicacoes-com-nodejs" },
+      },
     ],
     fallback: "blocking",
   };
@@ -109,7 +77,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const post = {
     slug,
     title: RichText.asText(response.data.title),
-    content: RichText.asHtml(response.data.content.splice(0, 2)),
+    content: RichText.asHtml(response.data.content.splice(0, 3)),
     updatedAt: new Date(response.last_publication_date).toLocaleDateString(
       "pt-BR",
       {
@@ -121,7 +89,9 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   };
 
   return {
-    props: { post },
-    revalidate: 60 * 30, // 30 min
+    props: {
+      post,
+    },
+    revalidate: 60 * 30, // 30 minutes
   };
 };
