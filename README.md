@@ -45,7 +45,7 @@ Neste projeto você pode se inscrever para ler posts sobre o mundo ReactJS.
 **Clone o projeto e acesse a pasta**
 
 ```bash
-$ git clone https://github.com/Pedroor/TechNews
+$ git clone https://github.com/Pedroor/IgNews
 ```
 
 **Siga os passos abaixo**
