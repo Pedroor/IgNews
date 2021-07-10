@@ -45,7 +45,7 @@ Neste projeto você pode se inscrever para ler posts sobre o mundo ReactJS.
 **Clone o projeto e acesse a pasta**
 
 ```bash
-$ git clone https://github.com/Daniel-Vinicius/Ignite.git && cd Ignite && cd 03-ignews
+$ git clone https://github.com/Pedroor/TechNews
 ```
 
 **Siga os passos abaixo**
