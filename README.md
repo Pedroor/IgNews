@@ -1,4 +1,4 @@
-# IgNews
+# IgNewss
 
 <h1 align="center">
   <img alt="tech.news" title="Tech.news" width="200px"  src=".github/logo.svg" />
